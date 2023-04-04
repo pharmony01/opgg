@@ -19,19 +19,35 @@ user_agents_list = [
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.246',
 ]
 
-def main():
-    summoner_name = "Révenant"
+def get_soup(summoner_name):
+    '''Requests the website url and pretends to be a random agent from the agent_list, returns the soupified page'''
     r = requests.get(f'https://www.op.gg/summoners/na/{summoner_name}', headers={'User-Agent': random.choice(user_agents_list)})
-    print(r.status_code)
     soup = BeautifulSoup(r.text, 'html.parser')
+    return soup
+
+def get_overall_stats(soup):
+    '''Finds wins and losses and returns them along with the win ratio (wr)'''
+    wins = int(re.search("([0-9]+)(W+?)", str(soup.find_all("div", class_="win-lose")[0]))[0][:-1])
+    losses = int(re.search("([0-9]+)(L+?)", str(soup.find_all("div", class_="win-lose")[0]))[0][:-1])
+    wr = round(wins / (wins + losses), 2) * 100
+    return [wins, losses, wr]
+
+def get_champion_info(soup):
+    '''Finds the champion names, games played, and individual wr'''
+    champs = soup.find_all("div", class_="champion-box")
+    champion_names = []
+    for i in range(len(champs)):
+        champion_names.append(re.search("(champions/)([a-z]+)", str(champs[i]))[0][10:])
+    return champion_names
+
+def main():
+    # Summoner name input
+    summoner_name = "Révenant"
+    soup = get_soup(summoner_name)
+    # If the summoner has played any ranked games query their information
     try:
-        wins = int(re.search("([0-9]+)(W+?)", str(soup.find_all("div", class_="win-lose")[0]))[0][:-1])
-        losses = int(re.search("([0-9]+)(L+?)", str(soup.find_all("div", class_="win-lose")[0]))[0][:-1])
-        wr = round(wins / (wins + losses), 2) * 100
-        champs = soup.find_all("div", class_="champion-box")
-        champion_names = []
-        for i in range(len(champs)):
-            champion_names.append(re.search("(champions/)([a-z]+)", str(champs[i]))[0][10:])
+        overall_stats = get_overall_stats(soup)
+        champion_information = get_champion_info(soup)
         pdb.set_trace()
     except:
         print(f"{summoner_name} has not played any ranked games this season")
