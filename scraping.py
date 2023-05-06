@@ -2,6 +2,7 @@ from bs4 import *
 import requests
 import re
 import random
+import numpy as np
 import pdb
 
 # ToS bamboozler list
@@ -20,7 +21,7 @@ user_agents_list = [
 ]
 
 
-def get_soup(summoner_name: str):
+def get_soup(summoner_name: str) -> BeautifulSoup:
     """Requests the website url and pretends to be a random agent from the agent_list, returns the soupified page"""
     r = requests.get(
         f"https://www.op.gg/summoners/na/{summoner_name}",
@@ -29,7 +30,7 @@ def get_soup(summoner_name: str):
     return BeautifulSoup(r.text, "html.parser")
 
 
-def get_overall_stats(soup: BeautifulSoup):
+def get_overall_stats(soup: BeautifulSoup) -> tuple[int, int, float, str, str]:
     """Returns wins, losses, total win rate (wr), rank, and LP"""
     search_space = str(soup.find_all("div", class_="win-lose")[0])
     wins = int(re.search("([0-9]+)(W+?)", search_space)[0][:-1])
@@ -40,7 +41,7 @@ def get_overall_stats(soup: BeautifulSoup):
     return wins, losses, total_wr, rank, lp
 
 
-def get_champion_info(soup: BeautifulSoup):
+def get_champion_info(soup: BeautifulSoup) -> np.ndarray:
     """Finds the champion names, individual wr, games played, kda, and image"""
 
     # Finds their winrate based on class
@@ -66,10 +67,10 @@ def get_champion_info(soup: BeautifulSoup):
             tag.get("src"),
         ]
         champion_info.append(temp_champ)
-    return champion_info
+    return np.array(champion_info)
 
 
-def get_summoner_info(soup: BeautifulSoup):
+def get_summoner_info(soup: BeautifulSoup) -> tuple[str, str, str]:
     """Returns the summoners name, level, and profile picture (pfp)"""
     level = soup.select(".level")[0].text
     pfp = soup.select(".profile-icon")[0].find("img").get("src")
