@@ -26,28 +26,59 @@ def get_soup(summoner_name):
     return soup
 
 def get_overall_stats(soup):
-    '''Finds wins and losses and returns them along with the win ratio (wr)'''
+    '''Returns wins, losses, total win rate (wr), rank, and LP'''
     wins = int(re.search("([0-9]+)(W+?)", str(soup.find_all("div", class_="win-lose")[0]))[0][:-1])
     losses = int(re.search("([0-9]+)(L+?)", str(soup.find_all("div", class_="win-lose")[0]))[0][:-1])
-    wr = round(wins / (wins + losses), 2) * 100
-    return [wins, losses, wr]
+    total_wr = round(wins / (wins + losses), 2) * 100
+    rank = soup.select('.tier')[0].text.strip().capitalize()
+    lp = soup.select('.lp')[0].text.strip()
+    return wins, losses, total_wr, rank, lp
 
 def get_champion_info(soup):
-    '''Finds the champion names, games played, and individual wr'''
-    champs = soup.find_all("div", class_="champion-box")
-    champion_names = []
-    for i in range(len(champs)):
-        champion_names.append(re.search("(champions/)([a-z]+)", str(champs[i]))[0][10:])
-    return champion_names
+    '''Finds the champion names, individual wr, games played, kda, and image'''
+    wr = soup.select('.css-b0uosc, .css-1nuoroq')
+    played = soup.select('.count')
+    kda = soup.select('.css-954ezp, .css-1w55eix, .css-10uuukx, .css-19wuqhz')
+    face = soup.select('.face')[1:]
+    champion_info = []
+    for i in range(len(wr)):
+        temp_champ = []
+        tag = face[i].find('img')
+        temp_champ.append(tag.get('alt'))
+        temp_champ.append(wr[i].text)
+        temp_champ.append(played[i].text)
+        temp_champ.append(kda[i].text)
+        temp_champ.append(tag.get('src'))
+        champion_info.append(temp_champ)
+    return champion_info
 
+def get_summoner_information(soup):
+    '''Returns the summoners name, level, and profile picture (pfp)'''
+    level = soup.select('.level')[0].text
+    pfp = soup.select('.profile-icon')[0].find('img').get('src')
+    name = soup.select('.name')[0].text
+    return name, level, pfp
+    
 def main():
     # Summoner name input
     summoner_name = "Révenant"
     soup = get_soup(summoner_name)
     # If the summoner has played any ranked games query their information
     try:
-        overall_stats = get_overall_stats(soup)
+        wins, losses, total_wr, rank, lp = get_overall_stats(soup)
         champion_information = get_champion_info(soup)
+        name, level, pfp = get_summoner_information(soup)
+        print(f"You searched for {name}")
+        print(f"This summoner is level {level}")
+        print(f"They have played a total of {wins+losses} games")
+        print(f"They have won {wins} and lost {losses} for a winrate of {total_wr}%")
+        print(f"They are currently in {rank} with {lp}")
+        print("These are their most played champtions:")
+        for champ in champion_information:
+            #Finds the champion names, individual wr, games played, kda, and image
+            print(f"{champ[0]}")
+            print(f"    WR: {champ[1]}\n    {champ[2]}\n    {champ[3]}")
+            
         pdb.set_trace()
     except:
         print(f"{summoner_name} has not played any ranked games this season")
