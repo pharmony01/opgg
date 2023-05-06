@@ -36,12 +36,22 @@ def get_overall_stats(soup):
 
 def get_champion_info(soup):
     '''Finds the champion names, individual wr, games played, kda, and image'''
+    
+    # Finds their winrate based on class
+    # The two classes represent the "red" and the "grey" winrates
     wr = soup.select('.css-b0uosc, .css-1nuoroq')
+    
+    # Gets their games played, and information for the pictures by class
     played = soup.select('.count')
-    kda = soup.select('.css-954ezp, .css-1w55eix, .css-10uuukx, .css-19wuqhz')
     face = soup.select('.face')[1:]
+    
+    # Gets their kda based on class
+    # There are 4 of them, since there are 4 different colors for KDAs
+    kda = soup.select('.css-954ezp, .css-1w55eix, .css-10uuukx, .css-19wuqhz')
+    
     champion_info = []
     for i in range(len(wr)):
+        # Appends all stats into a list
         temp_champ = []
         tag = face[i].find('img')
         temp_champ.append(tag.get('alt'))
@@ -52,7 +62,7 @@ def get_champion_info(soup):
         champion_info.append(temp_champ)
     return champion_info
 
-def get_summoner_information(soup):
+def get_summoner_info(soup):
     '''Returns the summoners name, level, and profile picture (pfp)'''
     level = soup.select('.level')[0].text
     pfp = soup.select('.profile-icon')[0].find('img').get('src')
@@ -61,13 +71,13 @@ def get_summoner_information(soup):
     
 def main():
     # Summoner name input
-    summoner_name = "Révenant"
+    summoner_name = "Ainn"
     soup = get_soup(summoner_name)
     # If the summoner has played any ranked games query their information
     try:
         wins, losses, total_wr, rank, lp = get_overall_stats(soup)
         champion_information = get_champion_info(soup)
-        name, level, pfp = get_summoner_information(soup)
+        name, level, pfp = get_summoner_info(soup)
         print(f"You searched for {name}")
         print(f"This summoner is level {level}")
         print(f"They have played a total of {wins+losses} games")
@@ -75,11 +85,10 @@ def main():
         print(f"They are currently in {rank} with {lp}")
         print("These are their most played champtions:")
         for champ in champion_information:
-            #Finds the champion names, individual wr, games played, kda, and image
             print(f"{champ[0]}")
-            print(f"    WR: {champ[1]}\n    {champ[2]}\n    {champ[3]}")
-            
-        pdb.set_trace()
+            print(f"    WR: {champ[1]}")
+            print(f"    {champ[2]}")
+            print(f"    {champ[3]}")
     except:
         print(f"{summoner_name} has not played any ranked games this season")
     
