@@ -27,13 +27,44 @@ def print_champion_data(
         print(f"    {champ[3]}")
 
 
-def show_champion_data(champion_information: np.ndarray[np.str_]) -> None:
+def show_champion_data(
+    champion_information: np.ndarray[np.str_], name: str, level: str, pfp: str
+) -> None:
     """Will show information, not ready yet"""
-    champion_information = np.array(champion_information)
-    plt.rcParams["figure.figsize"] = [7.50, 3.50]
-    plt.rcParams["figure.autolayout"] = True
-    # a = io.imread()
+    # Extract the relevant data from the input array
+    champion_names = [row[0] for row in champion_information]
+    win_rates = [float(row[1].strip("%")) for row in champion_information]
+    games_played = [int(row[2].split(" ")[0]) for row in champion_information]
+    kda_ratios = [float(row[3].split(":")[0]) for row in champion_information]
+    urls = [row[4] for row in champion_information]
+    images = [io.imread(url) for url in urls]
+    size = max(games_played)
 
-    # plt.imshow(a)
-    # plt.axis("off")
-    # plt.show()
+    # Create a figure and set its size
+    fig = plt.figure(figsize=(10, 6))
+
+    # Set the title for both subplots
+    fig.suptitle("Champion Statistics", y=0.95, fontsize=16)
+
+    # Create the subplots
+    ax1 = fig.add_subplot(211)
+    ax2 = fig.add_subplot(212)
+
+    # Create the bar chart for win rates
+    bars1 = ax1.bar(champion_names, win_rates)
+    ax1.set_ylabel("Win Rate (%)")
+    ax1.set_ylim(0, 100)
+
+    # Set the win rate labels on top of the bars
+    ax1.bar_label(bars1, labels=[f"{win_rate:.2f}%" for win_rate in win_rates])
+
+    # Create the bar chart for games played
+    bars2 = ax2.bar(champion_names, games_played)
+    ax2.set_ylabel("Games Played")
+    ax2.set_ylim(0, size + (int(size * 0.1)))
+    ax2.set
+
+    # Set the win rate labels on top of the bars
+    ax2.bar_label(bars2, labels=games_played)
+
+    plt.show()

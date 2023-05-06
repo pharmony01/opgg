@@ -15,10 +15,11 @@ def main():
         print_champion_data(
             champion_information, wins, losses, total_wr, rank, lp, name, level
         )
-        show_champion_data(champion_information)
+        show_champion_data(champion_information, name, level, pfp)
 
     except IndexError:
         print(f"{summoner_name} has not played any ranked games this season")
+    pdb.set_trace()
 
 
 if __name__ == "__main__":
