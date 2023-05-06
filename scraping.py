@@ -20,7 +20,7 @@ user_agents_list = [
 ]
 
 
-def get_soup(summoner_name):
+def get_soup(summoner_name: str):
     """Requests the website url and pretends to be a random agent from the agent_list, returns the soupified page"""
     r = requests.get(
         f"https://www.op.gg/summoners/na/{summoner_name}",
@@ -29,7 +29,7 @@ def get_soup(summoner_name):
     return BeautifulSoup(r.text, "html.parser")
 
 
-def get_overall_stats(soup):
+def get_overall_stats(soup: BeautifulSoup):
     """Returns wins, losses, total win rate (wr), rank, and LP"""
     search_space = str(soup.find_all("div", class_="win-lose")[0])
     wins = int(re.search("([0-9]+)(W+?)", search_space)[0][:-1])
@@ -40,7 +40,7 @@ def get_overall_stats(soup):
     return wins, losses, total_wr, rank, lp
 
 
-def get_champion_info(soup):
+def get_champion_info(soup: BeautifulSoup):
     """Finds the champion names, individual wr, games played, kda, and image"""
 
     # Finds their winrate based on class
@@ -69,7 +69,7 @@ def get_champion_info(soup):
     return champion_info
 
 
-def get_summoner_info(soup):
+def get_summoner_info(soup: BeautifulSoup):
     """Returns the summoners name, level, and profile picture (pfp)"""
     level = soup.select(".level")[0].text
     pfp = soup.select(".profile-icon")[0].find("img").get("src")

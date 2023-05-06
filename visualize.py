@@ -4,7 +4,7 @@ from skimage import io
 import pdb
 
 
-def show_champion_data(champion_information):
+def show_champion_data(champion_information: List[List[str]]):
     """Will show information, not ready yet"""
     champion_information = np.array(champion_information)
     plt.rcParams["figure.figsize"] = [7.50, 3.50]

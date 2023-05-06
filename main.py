@@ -26,6 +26,8 @@ def main():
         print(f"{summoner_name} has not played any ranked games this season")
     except Exception:
         print("Wow you broke this good")
+    finally:
+        pdb.set_trace()
 
 
 if __name__ == "__main__":
