@@ -1,5 +1,6 @@
 from scraping import *
-    
+
+
 def main():
     # Summoner name input
     summoner_name = "Ainn"
@@ -20,12 +21,12 @@ def main():
             print(f"    WR: {champ[1]}")
             print(f"    {champ[2]}")
             print(f"    {champ[3]}")
-        
-    except:
+
+    except IndexError:
         print(f"{summoner_name} has not played any ranked games this season")
-    
-    
-    
-    
+    except Exception:
+        print("Wow you broke this good")
+
+
 if __name__ == "__main__":
     main()
