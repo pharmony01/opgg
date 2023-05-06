@@ -30,21 +30,21 @@ def print_champion_data(
 def show_champion_data(
     champion_information: np.ndarray[np.str_], name: str, level: str, pfp: str
 ) -> None:
-    """Will show information, not ready yet"""
+    """Shows 2 bar graphs, one for win rate and one for games played"""
     # Extract the relevant data from the input array
     champion_names = [row[0] for row in champion_information]
     win_rates = [float(row[1].strip("%")) for row in champion_information]
     games_played = [int(row[2].split(" ")[0]) for row in champion_information]
     kda_ratios = [float(row[3].split(":")[0]) for row in champion_information]
     urls = [row[4] for row in champion_information]
-    images = [io.imread(url) for url in urls]
+    # images = [io.imread(url) for url in urls]
     size = max(games_played)
 
     # Create a figure and set its size
     fig = plt.figure(figsize=(10, 6))
 
     # Set the title for both subplots
-    fig.suptitle("Champion Statistics", y=0.95, fontsize=16)
+    fig.suptitle(f"Champion Statistics for {name}", y=0.95, fontsize=16)
 
     # Create the subplots
     ax1 = fig.add_subplot(211)

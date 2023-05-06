@@ -18,13 +18,20 @@ user_agents_list = [
     "Mozilla/5.0 (iPhone13,2; U; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/602.1.50 (KHTML, like Gecko) Version/10.0 Mobile/15E148 Safari/602.1",
     "Mozilla/5.0 (Linux; Android 12; SM-X906C Build/QP1A.190711.020; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/80.0.3987.119 Mobile Safari/537.36",
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.246",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 13_1) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.1 Safari/605.1.15",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.1 Safari/605.1.15",
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36"
 ]
 
 
-def get_soup(summoner_name: str) -> BeautifulSoup:
+def get_soup(url: str) -> BeautifulSoup:
     """Requests the website url and pretends to be a random agent from the agent_list, returns the soupified page"""
     r = requests.get(
-        f"https://www.op.gg/summoners/na/{summoner_name}",
+        url,
         headers={"User-Agent": random.choice(user_agents_list)},
     )
     return BeautifulSoup(r.text, "html.parser")
@@ -50,14 +57,14 @@ def get_champion_info(soup: BeautifulSoup) -> np.ndarray:
 
     # Gets their games played, and information for the pictures by class
     played = soup.select(".count")
-    face = soup.select(".face")[1:]
+    face = soup.select(".champion-box")
 
     # Gets their kda based on class
     # There are 4 of them, since there are 4 different colors for KDAs
     kda = soup.select(".css-954ezp, .css-1w55eix, .css-10uuukx, .css-19wuqhz")
 
     champion_info = []
-    for i, _ in enumerate(wr):
+    for i, _ in enumerate(face):
         tag = face[i].find("img")
         temp_champ = [
             tag.get("alt"),
