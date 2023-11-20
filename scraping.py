@@ -81,5 +81,6 @@ def get_summoner_info(soup: BeautifulSoup) -> tuple[str, str, str]:
     """Returns the summoners name, level, and profile picture (pfp)"""
     level = soup.select(".level")[0].text
     pfp = soup.select(".profile-icon")[0].find("img").get("src")
-    name = soup.select(".name")[0].text
+    pdb.set_trace()
+    name = soup.select(".")[0].text
     return name, level, pfp
